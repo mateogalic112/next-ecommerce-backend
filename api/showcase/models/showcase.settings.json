@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "showcases",
+  "info": {
+    "name": "Showcase"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Carousel": {
+      "type": "component",
+      "repeatable": true,
+      "component": "showcase.carousel"
+    }
+  }
+}
