@@ -108,4 +108,33 @@ module.exports = {
 
     return { id: session.id };
   },
+
+  /**
+   * Confirm order.
+   *
+   * @return {Object}
+   */
+  async confirm(ctx) {
+    const { checkout_session } = ctx.request.body;
+    const session = await stripe.checkout.sessions.retrieve(checkout_session);
+
+    if (session.payment_status === "paid") {
+      //Update order
+      const newOrder = await strapi.services.order.update(
+        {
+          checkout_session,
+        },
+        {
+          status: "paid",
+        }
+      );
+
+      return newOrder;
+    } else {
+      ctx.throw(
+        400,
+        "It seems like the order wasn't verified, please contact support"
+      );
+    }
+  },
 };
