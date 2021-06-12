@@ -118,18 +118,23 @@ module.exports = {
     const { checkout_session } = ctx.request.body;
     const session = await stripe.checkout.sessions.retrieve(checkout_session);
 
+    const foundEntity = await strapi.services.order.findOne({
+      checkout_session,
+    });
+
     if (session.payment_status === "paid") {
-      //Update order
-      const newOrder = await strapi.services.order.update(
+      const entity = await strapi.services.order.update(
         {
-          checkout_session,
+          id: foundEntity.id,
         },
         {
           status: "paid",
         }
       );
 
-      return newOrder;
+      console.log(entity);
+
+      return sanitizeEntity(entity, { model: strapi.models.order });
     } else {
       ctx.throw(
         400,
