@@ -87,7 +87,9 @@ module.exports = {
     await strapi.services.order.create({
       customer: user.id,
       order_details: cartItems,
-      total: realProduct.price,
+      total: cartItems
+        .reduce((acc, item) => acc + item.product.price * item.quantity, 0)
+        .toFixed(2),
       status: "unpaid",
       checkout_session: session.id,
     });
