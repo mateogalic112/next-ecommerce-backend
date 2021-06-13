@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_order_order_details",
+  "info": {
+    "name": "OrderDetail",
+    "icon": "atom"
+  },
+  "options": {},
+  "attributes": {
+    "product": {
+      "model": "product"
+    },
+    "quantity": {
+      "type": "integer"
+    }
+  }
+}

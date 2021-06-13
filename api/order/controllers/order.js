@@ -59,18 +59,10 @@ module.exports = {
    * @return {Object}
    */
   async create(ctx) {
-    const { product } = ctx.request.body;
+    const { cartItems } = ctx.request.body;
 
-    if (!product) {
-      return ctx.throw(400, "No product");
-    }
-
-    const realProduct = await strapi.services.product.findOne({
-      id: product.id,
-    });
-
-    if (!realProduct) {
-      return ctx.throw(404, "No product finb");
+    if (!cartItems) {
+      return ctx.throw(400, "Cart is empty");
     }
 
     const { user } = ctx.state;
@@ -79,18 +71,12 @@ module.exports = {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: realProduct.name,
-            },
-            unit_amount: fromDecimalToInt(realProduct.price),
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: cartItems.map((item) => ({
+        name: item.product.name,
+        amount: item.product.price * 100,
+        currency: "usd",
+        quantity: item.quantity,
+      })),
       customer_email: user.email, //Automatically added by Magic Link
       mode: "payment",
       success_url: `${BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -98,9 +84,9 @@ module.exports = {
     });
 
     // Create order
-    const newOrder = await strapi.services.order.create({
+    await strapi.services.order.create({
       customer: user.id,
-      products: [realProduct.id],
+      order_details: cartItems,
       total: realProduct.price,
       status: "unpaid",
       checkout_session: session.id,
@@ -131,8 +117,6 @@ module.exports = {
           status: "paid",
         }
       );
-
-      console.log(entity);
 
       return sanitizeEntity(entity, { model: strapi.models.order });
     } else {
