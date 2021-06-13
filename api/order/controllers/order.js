@@ -56,7 +56,7 @@ module.exports = {
   /**
    * Creates order and checkout session that belongs to logged in user.
    *
-   * @return {Object}
+   * @return {string} Stripe session id.
    */
   async create(ctx) {
     const { cartItems } = ctx.request.body;
