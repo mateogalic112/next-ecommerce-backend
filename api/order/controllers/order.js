@@ -59,7 +59,7 @@ module.exports = {
   async create(ctx) {
     const { cartItems } = ctx.request.body;
 
-    if (!cartItems) {
+    if (cartItems.length === 0) {
       return ctx.throw(400, "Cart is empty");
     }
 
