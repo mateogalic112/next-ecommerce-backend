@@ -2,8 +2,6 @@
 
 const { sanitizeEntity } = require("strapi-utils");
 
-const fromDecimalToInt = (number) => parseInt(number * 100);
-
 const stripe = require("stripe")(process.env.STRIPE_SK);
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
