@@ -92,6 +92,16 @@ module.exports = {
       checkout_session: session.id,
     });
 
+    // Update product stocks
+    const promiseArray = cartItems.map((item) =>
+      strapi.services.product.update(
+        { id: item.product.id },
+        { stock: item.product.stock - item.quantity }
+      )
+    );
+
+    await Promise.all(promiseArray);
+
     return { id: session.id };
   },
 
